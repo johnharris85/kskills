@@ -29,6 +29,30 @@ Explain before creating anything:
 > If you had a public route on the same service that shouldn't require auth, you'd
 > use a plugin exception — but for this tutorial, service-level is exactly right.
 
+Render this diagram when explaining the concept:
+
+```
+  Incoming request
+         │
+         ▼
+  ┌──────────────────┐
+  │    key-auth      │  ← service-level plugin
+  │                  │
+  │  missing key? ──────→ 401
+  │  unknown key? ──────→ 401
+  └────────┬─────────┘
+           │ key valid → consumer identified (jungle-user)
+           ▼
+  ┌──────────────────┐
+  │  rate-limiting   │  ← route-level plugin (added in next step)
+  │                  │
+  │  over limit? ───────→ 429
+  └────────┬─────────┘
+           │ within limit
+           ▼
+       upstream (httpbin.org)
+```
+
 ---
 
 ## Step 4a: Create the Consumer

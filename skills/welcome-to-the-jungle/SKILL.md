@@ -24,14 +24,18 @@ secured, rate-limited API proxy with live verification.
 
 ## Mode Selection — Ask This First
 
-Present the two options and wait for a choice before proceeding:
+**If your harness provides an interactive question tool** (e.g. `AskUserQuestion` in
+Claude Code, or a similar picker), use it here — it renders a much cleaner experience
+than markdown text. Otherwise, present the options as formatted text and wait for a reply.
+
+Ask the user to choose:
 
 > **How would you like to build your Kong setup?**
 >
-> **A) API mode** — I'll call the Konnect API on your behalf at each step using the
+> **API mode** — I'll call the Konnect API on your behalf at each step using the
 > Konnect MCP. You see what gets created; I handle the calls.
 >
-> **B) decK mode** — Each step builds an incremental `jungle.yaml` file in Kong's
+> **decK mode** — Each step builds an incremental `jungle.yaml` file in Kong's
 > declarative format, and I'll show you the `deck` commands to run. This mirrors a
 > real GitOps workflow where your gateway config lives in version-controlled YAML.
 
@@ -54,20 +58,20 @@ Complete each stage fully before advancing.
 
 ## Progress Tracker
 
-Print this at the start of every stage. Replace `[ ]` with `[✓]` for completed stages.
+Print this at the start of every step. Replace `[ ]` with `[✓]` for completed steps.
 Show `[API]` or `[decK]` on the header line based on `JUNGLE_MODE`.
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Welcome to the Jungle — Konnect Tutorial [MODE]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  [ ] 0  Account Setup
-  [ ] 1  Control Plane
-  [ ] 2  Data Plane (Docker)
-  [ ] 3  Service + Route
-  [ ] 4  Consumer + Key Auth
-  [ ] 5  Rate Limiting
-  [ ] 6  Verify End-to-End
+  [ ] Account Setup
+  [ ] Control Plane
+  [ ] Data Plane
+  [ ] Service + Route
+  [ ] Consumer + Key Auth
+  [ ] Rate Limiting
+  [ ] Verify End-to-End
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -130,6 +134,16 @@ current working directory. Show the full file content after each update.
 **decK sync pattern.** In deck mode: write the YAML → validate → show diff command
 → show sync command → wait for user to confirm they ran it before continuing.
 
+**Interactive inputs.** Whenever you need a choice from the user (mode selection, rate
+limit value, etc.), prefer an interactive question tool if your harness provides one
+(e.g. `AskUserQuestion` in Claude Code). This renders a cleaner picker than inline text.
+If no such tool is available, fall back to a formatted lettered list.
+
+**Terminal visuals.** Use ASCII box-drawing diagrams to illustrate architecture and
+request flows — they're far more memorable than prose. Prefer Unicode box characters
+(`┌ ─ ┐ │ └ ┘ ├ ┤ ┬ ┴ → ↓`) for clean lines. Each stage reference file includes a
+diagram template; render it as a fenced code block so it's monospace-aligned.
+
 **Tone.** Brief concept explanations before each action. Keep energy up — lab, not manual.
 
 ---
@@ -145,7 +159,7 @@ That's great — curiosity is good. Answer them, but keep the tutorial moving.
    accurate documentation rather than guessing. Summarize the relevant part for them.
 
 2. After answering, if `JUNGLE_NUDGE_COUNT < 2`, add a gentle nudge like:
-   > "Happy to keep exploring this — or we can jump back to Stage N whenever you're ready."
+   > "Happy to keep exploring this — or we can pick up where we left off whenever you're ready."
    Keep it low-pressure. One sentence, at the end of your reply.
 
 3. If the user declines the nudge or says they want to keep exploring, increment

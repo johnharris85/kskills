@@ -25,6 +25,30 @@ Explain this before creating anything:
 > These are unique to your CP. If you create multiple CPs (e.g. prod vs staging),
 > each gets its own set of endpoints, so DPs can't accidentally join the wrong cluster.
 
+Render this diagram when explaining the concept:
+
+```
+  ┌──────────────────────────────────────────┐
+  │            Konnect (Cloud)               │
+  │  ┌────────────────────────────────────┐  │
+  │  │          Control Plane             │  │
+  │  │  services · routes · plugins       │  │
+  │  │  consumers · certificates          │  │
+  │  └─────────────────┬──────────────────┘  │
+  └────────────────────│────────────────────-┘
+                       │ config sync (mTLS)
+                       ▼
+  ┌──────────────────────────────────────────┐
+  │          Your machine (Docker)           │
+  │  ┌────────────────────────────────────┐  │
+  │  │           Data Plane               │  │
+  │  │       Kong Gateway process         │  │
+  │  │   enforces rules · routes traffic  │  │
+  │  └────────────────────────────────────┘  │
+  │        ↑ requests       ↓ responses      │
+  └──────────────────────────────────────────┘
+```
+
 ---
 
 ## Create the Control Plane

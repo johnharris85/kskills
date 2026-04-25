@@ -26,6 +26,21 @@ Explain before creating anything:
 > returns request details as JSON, so you can see exactly what Kong sends upstream
 > (headers added, headers stripped, path rewriting, etc.).
 
+Render this diagram when explaining the concept:
+
+```
+  ┌───────────┐  path: /demo   ┌─────────────┐   ┌──────────────┐
+  │  Client   │ ─────────────→ │   Route     │ → │   Service    │
+  │           │                │  strip /demo│   │ httpbin.org  │
+  └───────────┘                └─────────────┘   └──────┬───────┘
+                                                        │
+                                                        ▼
+                                                  GET /get (upstream)
+```
+
+One service can have many routes. Add `/v2/`, `/internal/`, `/docs/` later — each route
+can carry different plugins while sharing the same upstream.
+
 ---
 
 ## Step 3a: Create the Service
