@@ -18,7 +18,7 @@ description: >
 You're guiding a user through a complete Kong Konnect setup — from zero account to a
 secured, rate-limited API proxy with live verification.
 
-**Before doing anything else, ask the user which path they want to take:**
+**Before doing anything else, check for a saved session, then ask the user which path they want to take:**
 
 ---
 
@@ -47,12 +47,18 @@ Save their answer as `JUNGLE_MODE`:
 
 ## How This Skill Works
 
-Work through the 7 stages in order. For each stage:
-1. Print the **progress tracker** (updated format below), including the mode
-2. Read the **stage's reference file** from the Stage Manifest (mode-specific for stages 3–6)
-3. Follow the instructions in that file
+**At session start, before anything else:**
+1. Attempt to Read `./jungle-state.json` (see State Persistence rule below)
+2. If found, offer to resume — skip the mode question if resuming
+3. If not found, ask the mode selection question, then proceed
 
-Complete each stage fully before advancing.
+**For each step:**
+1. Print the **progress tracker** (updated format below), including the mode
+2. Read the **step's reference file** from the Stage Manifest (mode-specific for steps 3–6)
+3. Follow the instructions in that file
+4. After completing the step: update `jungle-state.json` and `jungle-progress.html`
+
+Complete each step fully before advancing.
 
 ---
 
@@ -131,8 +137,55 @@ live MCP response values. Never leave placeholder text.
 **decK file location.** In deck mode, always write and update `./jungle.yaml` in the
 current working directory. Show the full file content after each update.
 
-**decK sync pattern.** In deck mode: write the YAML → validate → show diff command
-→ show sync command → wait for user to confirm they ran it before continuing.
+**decK execution pattern.** In deck mode, after writing or updating `jungle.yaml`:
+1. Run `deck file validate jungle.yaml --konnect-compatibility` via Bash — show the output
+2. If valid, run `deck gateway diff jungle.yaml` via Bash — show the diff output
+3. Ask: *"Ready to apply? I'll run `deck gateway sync` now."* (use `AskUserQuestion` if available)
+4. Only run `deck gateway sync jungle.yaml` via Bash after explicit confirmation — show output
+
+Do NOT show commands and ask the user to run them. Claude runs validate and diff directly;
+sync is the only step that pauses for confirmation (it's a write operation).
+
+**State persistence.** At skill start, before anything else, attempt to Read
+`./jungle-state.json`.
+- If found: load it, restore all JUNGLE_* variables, and offer to resume:
+  > "I found a saved session — you completed: [list done steps]. Want to resume
+  > from [current_step], or start fresh?"
+  - Resume: skip completed steps, continue from `current_step`
+  - Fresh: overwrite the file and begin from the top
+- After setting any JUNGLE_* variable: rewrite `./jungle-state.json` with the Write tool.
+  Use this structure:
+  ```json
+  {
+    "mode": "api",
+    "completed_steps": ["Account Setup", "Control Plane"],
+    "current_step": "Data Plane",
+    "variables": {
+      "JUNGLE_MODE": "api",
+      "JUNGLE_KONNECT_REGION": "us",
+      "JUNGLE_CP_ID": "...",
+      "JUNGLE_CLUSTER_ENDPOINT": "...",
+      "JUNGLE_TELEMETRY_ENDPOINT": "...",
+      "JUNGLE_CLUSTER_SERVER_NAME": "...",
+      "JUNGLE_TELEMETRY_SERVER_NAME": "...",
+      "JUNGLE_SERVICE_ID": "...",
+      "JUNGLE_ROUTE_ID": "...",
+      "JUNGLE_CONSUMER_ID": "...",
+      "JUNGLE_API_KEY": "...",
+      "JUNGLE_RATE_LIMIT": 5,
+      "JUNGLE_CERTS_DIR": "..."
+    }
+  }
+  ```
+  Omit variables not yet set rather than leaving them blank.
+
+**Visual companion.** Maintain `jungle-progress.html` in the working directory.
+- Read `references/progress-template.md` for the HTML template and per-step update guide.
+- Generate the file (Write tool) immediately after the user selects a mode.
+- Update it (Write tool, full rewrite) after each step completes.
+- Tell the user once, after generating: *"I've created `jungle-progress.html` — open it
+  in your browser to track progress and see your credentials as we go."*
+  Don't mention it again unless they ask.
 
 **Interactive inputs.** Whenever you need a choice from the user (mode selection, rate
 limit value, etc.), prefer an interactive question tool if your harness provides one

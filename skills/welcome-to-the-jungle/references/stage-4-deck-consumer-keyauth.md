@@ -82,23 +82,27 @@ nested under the service, and the top-level `consumers` block.
 
 ## Validate and Sync
 
-```bash
-# Validate
-deck file validate jungle.yaml --konnect-compatibility
+Run each command via Bash and show the output inline.
 
-# Preview
+**1. Validate:**
+```bash
+deck file validate jungle.yaml --konnect-compatibility
+```
+
+**2. Preview:**
+```bash
 deck gateway diff jungle.yaml
 ```
+Expected: decK reports creating the `key-auth` plugin and consumer `jungle-user` with
+one key credential. Show the output.
 
-Expected diff output: decK shows it will create the `key-auth` plugin and a new consumer
-`jungle-user` with one key credential.
-
+**3. Confirm then apply:**
+Ask: *"Diff looks good — ready to apply? I'll run `deck gateway sync` now."*
+Use `AskUserQuestion` if available. After confirmation:
 ```bash
-# Apply
 deck gateway sync jungle.yaml
 ```
-
-**Wait for the user to confirm sync completed before continuing.**
+Show the sync output.
 
 ---
 

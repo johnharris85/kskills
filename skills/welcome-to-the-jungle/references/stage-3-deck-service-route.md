@@ -44,29 +44,28 @@ Show the user the full file content after writing it.
 
 ## Validate and Sync
 
-Show these commands in order. Tell the user to run each one:
+Run each command via Bash and show the output inline.
 
-**1. Validate the file (local, no network call):**
+**1. Validate:**
 ```bash
 deck file validate jungle.yaml --konnect-compatibility
 ```
-Expected output: no errors.
+Expected: no errors. If there are errors, show them and fix the YAML before proceeding.
 
-**2. Preview what will change (dry run):**
+**2. Preview (dry run):**
 ```bash
 deck gateway diff jungle.yaml
 ```
-Expected: decK shows `creating service jungle-service` and `creating route jungle-route`.
-This is just a preview — nothing has changed yet.
+Expected: decK reports it will create `jungle-service` and `jungle-route`. Show the
+output so the user can see what's about to change. Nothing is applied yet.
 
-**3. Apply:**
+**3. Confirm then apply:**
+Ask: *"Diff looks good — ready to apply? I'll run `deck gateway sync` now."*
+Use `AskUserQuestion` if available. After confirmation:
 ```bash
 deck gateway sync jungle.yaml
 ```
-decK will confirm before applying if run interactively. The user should see the same
-changes listed as in the diff, then a success message.
-
-**Wait for the user to confirm sync completed successfully before continuing.**
+Show the sync output.
 
 ---
 

@@ -75,23 +75,27 @@ where in the hierarchy the plugin block appears.
 
 ## Validate and Sync
 
-```bash
-# Validate
-deck file validate jungle.yaml --konnect-compatibility
+Run each command via Bash and show the output inline.
 
-# Preview
+**1. Validate:**
+```bash
+deck file validate jungle.yaml --konnect-compatibility
+```
+
+**2. Preview:**
+```bash
 deck gateway diff jungle.yaml
 ```
+Expected: decK reports creating the `rate-limiting` plugin scoped to `jungle-route`.
+No other changes. Show the output.
 
-Expected diff: decK shows it will create the `rate-limiting` plugin scoped to
-`jungle-route`. No changes to the service, consumer, or key-auth plugin.
-
+**3. Confirm then apply:**
+Ask: *"Diff looks good — ready to apply? I'll run `deck gateway sync` now."*
+Use `AskUserQuestion` if available. After confirmation:
 ```bash
-# Apply
 deck gateway sync jungle.yaml
 ```
-
-**Wait for the user to confirm sync completed before continuing.**
+Show the sync output.
 
 ---
 
