@@ -2,18 +2,32 @@
 
 ## Concept
 
-Explain briefly:
+Explain before creating anything:
 
-> Kong's **Consumer** object represents a user or application that will call your API.
-> Consumers are identity, not authentication — they're the "who" that owns credentials.
+> Kong's **Consumer** object represents a user or application that calls your API.
+> Consumers are *identity*, not authentication — they're the "who". The auth method
+> (key-auth, OAuth, JWT, etc.) is separate and plugged in independently.
 >
-> **Key Authentication** is a plugin that enforces API keys on a service or route.
-> Here's how it works:
-> 1. You enable the key-auth plugin on the service — Kong now rejects requests without a key
-> 2. You create a consumer — the identity that will own the key
-> 3. You create a key credential for that consumer — the actual secret they'll send
+> This separation pays off at scale: you can have one consumer with multiple credential
+> types, or swap auth methods without losing the consumer's history. It also means
+> Kong can track analytics, apply rate limits, and enforce ACLs *per consumer* — not
+> just per IP or globally.
 >
-> We're enabling key-auth on the **service** level so it applies to all routes on the service.
+> **Kong's plugin execution order** matters here. Plugins run in a defined priority:
+> global plugins fire first, then service-level, then route-level, then consumer-level.
+> Within a level, Kong uses the plugin's declared priority number. `key-auth` runs at
+> priority 1250, which means it runs before most transformation plugins but after
+> things like request-size-limiting. You generally don't need to manage this manually —
+> just know that auth plugins run early in the pipeline.
+>
+> **Key Authentication** flow:
+> 1. Enable key-auth on the service → Kong checks every request for a valid key
+> 2. Create a consumer → the identity that will own credentials
+> 3. Create a key credential for that consumer → what they actually send
+>
+> We're enabling key-auth at the **service** level so it applies to all routes.
+> If you had a public route on the same service that shouldn't require auth, you'd
+> use a plugin exception — but for this tutorial, service-level is exactly right.
 
 ---
 

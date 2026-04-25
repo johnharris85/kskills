@@ -108,6 +108,7 @@ Stages 0–2 are identical in both modes. Stages 3–6 depend on `JUNGLE_MODE`.
 | `JUNGLE_API_KEY` | Stage 4 | API key value (API: from MCP; decK: user-chosen) |
 | `JUNGLE_RATE_LIMIT` | Stage 5 | Requests per minute |
 | `JUNGLE_KONNECT_REGION` | Stage 0 | e.g. `us`, `eu`, `au` |
+| `JUNGLE_NUDGE_COUNT` | Any stage | Times user has declined returning to tutorial; start at 0 |
 
 **Control plane scoping (API mode).** Always pass `control_plane_id: JUNGLE_CP_ID`
 on every configuration API call.
@@ -121,7 +122,7 @@ on every configuration API call.
 **Docker command assembly.** In stage 2, build the complete `docker run` command from
 live MCP response values. Never leave placeholder text.
 
-**Cert file handling.** Write cert/key to temp files via Bash before Docker run.
+**Cert file handling.** Use the Write tool to write cert and key to `./certs/` — not a Bash heredoc. This is cross-platform safe.
 
 **decK file location.** In deck mode, always write and update `./jungle.yaml` in the
 current working directory. Show the full file content after each update.
@@ -130,6 +131,29 @@ current working directory. Show the full file content after each update.
 → show sync command → wait for user to confirm they ran it before continuing.
 
 **Tone.** Brief concept explanations before each action. Keep energy up — lab, not manual.
+
+---
+
+## Handling Questions Beyond the Tutorial
+
+Users will sometimes ask Kong/Konnect questions that go beyond the current tutorial step.
+That's great — curiosity is good. Answer them, but keep the tutorial moving.
+
+**When a user asks something off-topic:**
+
+1. Answer the question genuinely. Use `WebFetch` on `https://developer.konghq.com` to find
+   accurate documentation rather than guessing. Summarize the relevant part for them.
+
+2. After answering, if `JUNGLE_NUDGE_COUNT < 2`, add a gentle nudge like:
+   > "Happy to keep exploring this — or we can jump back to Stage N whenever you're ready."
+   Keep it low-pressure. One sentence, at the end of your reply.
+
+3. If the user declines the nudge or says they want to keep exploring, increment
+   `JUNGLE_NUDGE_COUNT`. Once `JUNGLE_NUDGE_COUNT >= 2`, **stop nudging entirely** and
+   just answer questions. Never mention getting back to the tutorial again unless they
+   bring it up first.
+
+4. When they are ready to return, resume from whatever stage they left off at.
 
 ---
 

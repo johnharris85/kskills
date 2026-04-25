@@ -2,13 +2,28 @@
 
 ## Concept
 
-Explain this briefly before creating anything:
+Explain this before creating anything:
 
 > A **Control Plane (CP)** is the brain of your Kong setup. It stores all your gateway
 > configuration — services, routes, plugins, consumers — and distributes it to data
 > plane nodes. No traffic flows through the CP itself; it's purely configuration.
-> We're creating a **hybrid** CP, which means data planes connect out to Konnect
-> rather than requiring inbound network access.
+>
+> We're creating a **hybrid** CP (`CLUSTER_TYPE_HYBRID`). In hybrid mode, data planes
+> reach out to Konnect to pull their config — they initiate the connection, so they work
+> even if they're behind a NAT or firewall. The alternative types are:
+> - `CLUSTER_TYPE_K8S_INGRESS_CONTROLLER` — for Kong Ingress Controller on Kubernetes
+> - `CLUSTER_TYPE_SERVERLESS` — fully managed DPs, no Docker required (Konnect-hosted)
+>
+> Hybrid gives you the most control: your DP runs on your infrastructure, but Konnect
+> manages the config. If Konnect ever has an outage, your DP keeps running on its last
+> known good config — it doesn't need a live connection to serve traffic.
+>
+> The CP response includes two endpoints you'll need in Stage 2:
+> - **cluster_endpoint** — where DPs connect to receive config updates (port 443)
+> - **cluster_telemetry_endpoint** — where DPs send analytics/vitals data
+>
+> These are unique to your CP. If you create multiple CPs (e.g. prod vs staging),
+> each gets its own set of endpoints, so DPs can't accidentally join the wrong cluster.
 
 ---
 
