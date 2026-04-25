@@ -20,7 +20,7 @@ Then explain what Konnect is in 3-4 sentences:
 ## Step 0a: Create a Konnect Account
 
 If the user doesn't have one yet, direct them to sign up for free:
-**https://konghq.com/products/kong-konnect** → "Start for Free"
+**https://konghq.com/products/kong-konnect/register**
 
 They'll choose a **region** (US, EU, AU, etc.) during sign-up. Tell them any region works
 for this tutorial — pick the one closest to them.
