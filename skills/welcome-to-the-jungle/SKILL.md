@@ -183,8 +183,10 @@ sync is the only step that pauses for confirmation (it's a write operation).
 - Read `references/progress-template.md` for the HTML template and per-step update guide.
 - Generate the file (Write tool) immediately after the user selects a mode.
 - Update it (Write tool, full rewrite) after each step completes.
-- Tell the user once, after generating: *"I've created `jungle-progress.html` — open it
-  in your browser to track progress and see your credentials as we go."*
+- After generating, run `pwd` via Bash to get the absolute path. Then tell the user once:
+  > I've created `jungle-progress.html`. Open it in your browser:
+  > `file:///[pwd-result]/jungle-progress.html`
+  > Or from the terminal: `open jungle-progress.html` (macOS) · `xdg-open jungle-progress.html` (Linux) · `start jungle-progress.html` (Windows)
   Don't mention it again unless they ask.
 
 **Interactive inputs.** Whenever you need a choice from the user (mode selection, rate
